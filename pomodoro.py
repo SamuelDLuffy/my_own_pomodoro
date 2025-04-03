@@ -20,11 +20,11 @@ class Pomodoro(QWidget):
         self.break_spent = QLabel("Time spent in break: 00:00")
 
         self.time = QTime(0,0)
-        self.time_total = QTime(0, 0)
-        self.break_total = QTime(0, 0)
+        self.time_total = QTime(0, 0, 0)
         self.break_time = QTime(0,0)
-        self.break_tracking = QTimer(self)
+        self.break_total = QTime(0, 0, 0)
         self.started = QTimer(self)
+        self.break_started = QTimer(self)
         self.paused = False 
         self.isBreak = False
 
@@ -93,7 +93,7 @@ class Pomodoro(QWidget):
         self.restart_button.clicked.connect(self.restart)
         self.break_button.clicked.connect(self.start_break)
         self.started.timeout.connect(self.time_out)
-        self.break_tracking.timeout.connect(self.time_out2)
+        self.break_started.timeout.connect(self.time_out2)
 
 
        
@@ -115,7 +115,7 @@ class Pomodoro(QWidget):
 
             self.started.stop()
             self.paused = True
-            self.break_tracking.stop()
+            self.break_started.stop()
             self.isBreak = True
 
 
@@ -123,7 +123,7 @@ class Pomodoro(QWidget):
         self.started.stop()
         self.timer_label.setText("00:00")
         self.time = QTime(0, 0)
-        self.break_tracking.stop()
+        self.break_started.stop()
         self.break_label.setText("00:00")
         self.break_time = QTime(0, 0)
        
@@ -137,7 +137,7 @@ class Pomodoro(QWidget):
                 self.break_label.setText("Invalid input! Enter a integer number.")
                 self.break_time = QTime(0, 0)
                 return
-        self.break_tracking.start(1000)
+        self.break_started.start(1000)
         self.isBreak = False
 
     def time_out(self):
@@ -146,7 +146,7 @@ class Pomodoro(QWidget):
                 self.timer_label.setText(self.time.toString("mm:ss"))
 
                 self.time_total = self.time_total.addSecs(1) # Counting total
-                self.time_spent.setText(f"Time spent studying: {self.time_total.toString('mm:ss')}")
+                self.time_spent.setText(f"Time spent studying: {self.time_total.toString('hh:mm:ss')}")
             else:
                  self.started.stop()
                  self.paused = False
@@ -159,9 +159,9 @@ class Pomodoro(QWidget):
                 self.break_label.setText(self.break_time.toString("mm:ss"))
 
                 self.break_total = self.break_total.addSecs(1) # Counting total
-                self.break_spent.setText(f"Time spent in break: {self.break_total.toString('mm:ss')}")
+                self.break_spent.setText(f"Time spent in break: {self.break_total.toString('hh:mm:ss')}")
             else:
-                 self.break_tracking.stop()
+                 self.break_started.stop()
                  self.paused = False
                  self.break_time = QTime(0, 0)
 
